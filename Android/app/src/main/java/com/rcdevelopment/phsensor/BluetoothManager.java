@@ -41,21 +41,34 @@ public class BluetoothManager {
     private static final UUID MY_UUID = UUID.fromString("0001101-0000-1000-8000-00805F9B34FB");
 
     private final BluetoothAdapter mAdapter;
-    private final IBluetoothMessageHandler messageHandler;
+    private final Handler messageHandler;
     private AcceptThread mAcceptThread;
     private ConnectingThread mConnectingThread;
     private ConnectedThread mConnectedThread;
 
     private int currentState = STATE_DISCONNECTED;
 
-    private static final int STATE_DISCONNECTED = 0;
-    private static final int STATE_CONNECTING = 1;
-    private static final int STATE_CONNECTED = 2;
+    public static final int STATE_DISCONNECTED = 0;
+    public static final int STATE_CONNECTING = 1;
+    public static final int STATE_CONNECTED = 2;
 
 
-    public BluetoothManager(Context context, IBluetoothMessageHandler messageHandler) {
+    public BluetoothManager(Handler messageHandler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         this.messageHandler = messageHandler;
+    }
+
+
+    private void setState(int state)
+    {
+        currentState = state;
+        messageHandler.obtainMessage(MainActivity.MESSAGE_STATE_CHANGED, state, -1, null).sendToTarget();
+    }
+
+
+    public int getState()
+    {
+        return currentState;
     }
 
 
@@ -98,10 +111,10 @@ public class BluetoothManager {
         mConnectingThread = new ConnectingThread(device);
         mConnectingThread.start();
 
-        currentState = STATE_CONNECTING;
+        setState(STATE_CONNECTING);
 
         // Tell the UI activity that the device is connecting
-        messageHandler.OnBluetoothDeviceConnecting(device);
+//        messageHandler.OnBluetoothDeviceConnecting(device);
     }
 
 
@@ -128,10 +141,10 @@ public class BluetoothManager {
         mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
 
-        currentState = STATE_CONNECTED;
+        setState(STATE_CONNECTED);
 
         // Tell the UI Activity that the device has been connected
-        messageHandler.OnBluetoothDeviceConnected(device);
+//        messageHandler.OnBluetoothDeviceConnected(device);
     }
 
 
@@ -150,7 +163,7 @@ public class BluetoothManager {
             mAcceptThread.cancel();
             mAcceptThread = null;
         }
-        currentState = STATE_DISCONNECTED;
+        setState(STATE_DISCONNECTED);
     }
 
 
@@ -169,7 +182,7 @@ public class BluetoothManager {
 
     private void connectionFailed() {
         // Send a failure message back to the Activity
-        messageHandler.OnBluetoothDeviceConnectionError();
+//        messageHandler.OnBluetoothDeviceConnectionError();
         // Start the service over to restart listening mode
         BluetoothManager.this.start();
     }
@@ -177,7 +190,7 @@ public class BluetoothManager {
 
     private void connectionLost() {
         // Send a failure message back to the Activity
-        messageHandler.OnBluetoothDeviceConnectionError();
+//        messageHandler.OnBluetoothDeviceConnectionError();
         // Start the service over to restart listening mode
         BluetoothManager.this.start();
     }
@@ -304,10 +317,7 @@ public class BluetoothManager {
         }
     }
 
-    /**
-     * This thread runs during a connection with a remote device. It handles all
-     * incoming and outgoing transmissions.
-     */
+
     private class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
@@ -328,6 +338,7 @@ public class BluetoothManager {
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
+
         }
 
         public void run() {
@@ -339,8 +350,12 @@ public class BluetoothManager {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+                    // convert the buffer to a string message (skipping the \n)
+                    String message = "";
+                    for(int i = 0; i < bytes-1; i++)
+                        message = message + (char)buffer[i];
                     // Send the obtained bytes to the UI Activity
-                    messageHandler.OnBluetoothDeviceMessageReceived(new String(buffer));
+                    messageHandler.obtainMessage(MainActivity.MESSAGE_READ, -1, -1, message).sendToTarget();
                 } catch (IOException e) {
                     connectionLost();
                     // Start the service over to restart listening mode
@@ -354,6 +369,8 @@ public class BluetoothManager {
         public void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
+                // notify the main activity that the message is sent
+                messageHandler.obtainMessage(MainActivity.MESSAGE_WRITE).sendToTarget();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -405,7 +422,6 @@ public class BluetoothManager {
             this.connect(device);
         } catch (Exception e) {
             //Log.e("Unable to connect to device address "+ address,e.getMessage());
-
         }
     }
 

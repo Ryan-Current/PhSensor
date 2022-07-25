@@ -23,12 +23,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
-import kotlin.Metadata;
 import kotlin.jvm.internal.Intrinsics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class MainActivity extends AppCompatActivity implements IOnBluetoothDeviceClick, IBluetoothMessageHandler {
+public final class MainActivity extends AppCompatActivity implements IOnBluetoothDeviceClick {
     // elements on screen
     private Button RefreshButton;
     private Button Function1Button;
@@ -41,6 +40,30 @@ public final class MainActivity extends AppCompatActivity implements IOnBluetoot
     private final ArrayList<BluetoothDevice> pairedDevices = new ArrayList<BluetoothDevice>();
     private final int REQUEST_ENABLE_BLUETOOTH = 1;
     private BluetoothManager bt;
+
+
+    public static final int MESSAGE_STATE_CHANGED = 0;
+    public static final int MESSAGE_READ = 1;
+    public static final int MESSAGE_WRITE = 2;
+
+
+    private Handler messageHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message message) {
+            switch (message.what) {
+                case MESSAGE_STATE_CHANGED:
+                    bluetoothDeviceStateChanged(message.arg1);
+                    break;
+                case MESSAGE_WRITE:
+                    bluetoothMessageSent();
+                    break;
+                case MESSAGE_READ:
+                    bluetoothMessageReceived((String)message.obj);
+                    break;
+            }
+            return false;
+        }
+    });
 
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,7 +150,7 @@ public final class MainActivity extends AppCompatActivity implements IOnBluetoot
 
     public void onBluetoothDeviceClick(BluetoothDevice device, int position) {
         Intrinsics.checkNotNullParameter(device, "device");
-        this.bt = new BluetoothManager(this, this);
+        this.bt = new BluetoothManager(messageHandler);
 
         try {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -141,6 +164,33 @@ public final class MainActivity extends AppCompatActivity implements IOnBluetoot
 
     }
 
+    private void bluetoothMessageReceived(String str)
+    {
+        Toast.makeText(this, "Message: "+str, Toast.LENGTH_LONG).show();
+    }
+
+
+    private void bluetoothDeviceStateChanged(int state)
+    {
+        switch (state) {
+            case BluetoothManager.STATE_DISCONNECTED:
+                Toast.makeText(this, "Bluetooth device disconnected", Toast.LENGTH_LONG).show();
+                break;
+            case BluetoothManager.STATE_CONNECTING:
+                Toast.makeText(this, "Connecting to device...", Toast.LENGTH_LONG).show();
+                break;
+            case BluetoothManager.STATE_CONNECTED:
+                Toast.makeText(this, "Bluetooth device connected!", Toast.LENGTH_LONG).show();
+                break;
+        }
+    }
+
+
+    private void bluetoothMessageSent()
+    {
+        Toast.makeText(this, "Reading pH", Toast.LENGTH_LONG).show();
+    }
+
 
 
     private void sendFunction1() {
@@ -152,33 +202,4 @@ public final class MainActivity extends AppCompatActivity implements IOnBluetoot
         this.bt.sendMessage("2");
     }
 
-    @Override
-    public void OnBluetoothDeviceConnecting(BluetoothDevice device) {
-        Toast.makeText(this, "Connecting to: " + device.getName() + "...", Toast.LENGTH_SHORT).show();
-    }
-
-
-    @Override
-    public void OnBluetoothDeviceConnected(BluetoothDevice device) {
-        Toast.makeText(this, "Device: " + device.getName() + " is connected!", Toast.LENGTH_SHORT).show();
-    }
-
-
-    @Override
-    public void OnBluetoothDeviceDisconnected(BluetoothDevice device) {
-        Toast.makeText(this, "Device: " + device.getName() + " is disconnected.", Toast.LENGTH_SHORT).show();
-
-    }
-
-
-    @Override
-    public void OnBluetoothDeviceMessageReceived(String message) {
-        Toast.makeText(this, "Message Received: " + message, Toast.LENGTH_LONG).show();
-    }
-
-
-    @Override
-    public void OnBluetoothDeviceConnectionError() {
-        Toast.makeText(this, "A bluetooth connection error occurred", Toast.LENGTH_SHORT).show();
-    }
 }
