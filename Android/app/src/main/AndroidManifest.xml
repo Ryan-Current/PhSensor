@@ -3,7 +3,6 @@
     package="com.rcdevelopment.phsensor">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
@@ -14,9 +13,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PhSensor">
+
+        <activity
+            android:name=".MainActivityCode"
+            android:label="@string/title_activity_main"></activity>
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

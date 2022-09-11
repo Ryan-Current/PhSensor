@@ -26,11 +26,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
 public class BluetoothManager {
 
@@ -62,7 +58,7 @@ public class BluetoothManager {
     private void setState(int state)
     {
         currentState = state;
-        messageHandler.obtainMessage(MainActivity.MESSAGE_STATE_CHANGED, state, -1, null).sendToTarget();
+        messageHandler.obtainMessage(MainActivityCode.MESSAGE_STATE_CHANGED, state, -1, null).sendToTarget();
     }
 
 
@@ -355,7 +351,7 @@ public class BluetoothManager {
                     for(int i = 0; i < bytes-1; i++)
                         message = message + (char)buffer[i];
                     // Send the obtained bytes to the UI Activity
-                    messageHandler.obtainMessage(MainActivity.MESSAGE_READ, -1, -1, message).sendToTarget();
+                    messageHandler.obtainMessage(MainActivityCode.MESSAGE_READ, -1, -1, message).sendToTarget();
                 } catch (IOException e) {
                     connectionLost();
                     // Start the service over to restart listening mode
@@ -370,7 +366,7 @@ public class BluetoothManager {
             try {
                 mmOutStream.write(buffer);
                 // notify the main activity that the message is sent
-                messageHandler.obtainMessage(MainActivity.MESSAGE_WRITE).sendToTarget();
+                messageHandler.obtainMessage(MainActivityCode.MESSAGE_WRITE).sendToTarget();
             } catch (IOException e) {
                 e.printStackTrace();
             }
