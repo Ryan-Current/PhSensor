@@ -49,7 +49,7 @@ public class LinearRegression {
         }
 
         // least squares formulas for m and b
-        m = ((n * sumXY) - (sumX * sumY)) / ((n * sumXSquared) - (sumX * sumX)));
+        m = ((n * sumXY) - (sumX * sumY)) / ((n * sumXSquared) - (sumX * sumX));
 
         b = (((sumY) - (m * sumX)) / n);
 
