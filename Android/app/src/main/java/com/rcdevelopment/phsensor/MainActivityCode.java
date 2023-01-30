@@ -13,6 +13,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -28,9 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 public final class MainActivityCode extends Fragment implements IOnBluetoothDeviceClick {
     // elements on screen
-    private Button RefreshButton;
+    private ImageButton RefreshButton;
     private Button Function1Button;
-    private Button Function2Button;
     private RecyclerView RecyclerView;
     // bluetooth related variables
     private BluetoothSocket bluetoothSocket;
@@ -39,6 +41,9 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
     private final ArrayList<BluetoothDevice> pairedDevices = new ArrayList<BluetoothDevice>();
     private final int REQUEST_ENABLE_BLUETOOTH = 1;
     private BluetoothManager bt;
+
+    private TextView statusTextView, rawValueTextView, phTextView;
+    private EditText divisorEditText;
 
 
     public static final int MESSAGE_STATE_CHANGED = 0;
@@ -72,8 +77,12 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
         this.RecyclerView = view.findViewById(R.id.selectDeviceRecyclerView);
         this.RefreshButton = view.findViewById(R.id.refreshBluetoothButton);
         this.Function1Button = view.findViewById(R.id.function1Button);
-        this.Function2Button = view.findViewById(R.id.function2Button);
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        this.statusTextView = view.findViewById(R.id.statusTextView);
+        this.rawValueTextView = view.findViewById(R.id.rawValueTextView);
+        this.phTextView = view.findViewById(R.id.phLabelTextView);
+        this.divisorEditText = view.findViewById(R.id.divisorEditText);
 
         RefreshButton.setOnClickListener((OnClickListener)(new OnClickListener() {
             public final void onClick(View it) {
@@ -84,12 +93,6 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
         Function1Button.setOnClickListener((OnClickListener)(new OnClickListener() {
             public final void onClick(View it) {
                 MainActivityCode.this.sendFunction1();
-            }
-        }));
-
-        Function2Button.setOnClickListener((OnClickListener)(new OnClickListener() {
-            public final void onClick(View it) {
-                MainActivityCode.this.sendFunction2();
             }
         }));
 
@@ -166,9 +169,11 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
 
     }
 
+
     private void bluetoothMessageReceived(String str)
     {
         Toast.makeText(getContext(), "Message: "+str, Toast.LENGTH_LONG).show();
+        rawValueTextView.setText(str);
     }
 
 
@@ -177,12 +182,18 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
         switch (state) {
             case BluetoothManager.STATE_DISCONNECTED:
                 Toast.makeText(getContext(), "Bluetooth device disconnected", Toast.LENGTH_LONG).show();
+                statusTextView.setText("Status: disconnected");
+                isConnected = false;
                 break;
             case BluetoothManager.STATE_CONNECTING:
                 Toast.makeText(getContext(), "Connecting to device...", Toast.LENGTH_LONG).show();
+                statusTextView.setText("Status: connecting...");
+                isConnected = false;
                 break;
             case BluetoothManager.STATE_CONNECTED:
                 Toast.makeText(getContext(), "Bluetooth device connected!", Toast.LENGTH_LONG).show();
+                statusTextView.setText("Status: connected");
+                isConnected = true;
                 break;
         }
     }
@@ -194,14 +205,15 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
     }
 
 
-
+    /**
+     * This is used to get the pH
+     */
     private void sendFunction1() {
-        this.bt.sendMessage("1");
+        if(isConnected)
+            this.bt.sendMessage("1");
+        else
+            Toast.makeText(getContext(), "No device connected", Toast.LENGTH_LONG).show();
     }
 
-
-    private void sendFunction2() {
-        this.bt.sendMessage("2");
-    }
 
 }
