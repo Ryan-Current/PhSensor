@@ -47,11 +47,6 @@
             android:textAlignment="center"
             android:textSize="18sp" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:visibility="invisible" />
     </LinearLayout>
 
     <LinearLayout
@@ -88,12 +83,6 @@
             android:textAlignment="center"
             android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/getRaw1Button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Read raw" />
     </LinearLayout>
 
     <LinearLayout
@@ -130,12 +119,6 @@
             android:textAlignment="center"
             android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/getRaw2Button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Read raw" />
     </LinearLayout>
 
     <LinearLayout
@@ -172,12 +155,6 @@
             android:textAlignment="center"
             android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/getRaw3Button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Read raw" />
     </LinearLayout>
 
     <TextView

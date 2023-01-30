@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton forwardButton, backButton;
     private int position;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -22,7 +22,7 @@ public class CalculateAdjustment extends Fragment {
     private TextView mTextView, bTextView;
     private EditText knownPH1EditText, knownPH2EditText, knownPH3EditText,
                      rawValue1EditText, rawValue2EditText, rawValue3EditText;
-    private Button readRaw1Button, readRaw2Button, readRaw3Button, saveAdjustmentValueButton;
+    private Button saveAdjustmentValueButton;
     private Double m, b;
 
     @Override
@@ -44,10 +44,6 @@ public class CalculateAdjustment extends Fragment {
         this.rawValue1EditText = view.findViewById(R.id.rawValue1EditText);
         this.rawValue2EditText = view.findViewById(R.id.rawValue2EditText);
         this.rawValue3EditText = view.findViewById(R.id.rawValue3EditText);
-
-        this.readRaw1Button = view.findViewById(R.id.getRaw1Button);
-        this.readRaw2Button = view.findViewById(R.id.getRaw2Button);
-        this.readRaw3Button = view.findViewById(R.id.getRaw3Button);
 
         this.saveAdjustmentValueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,49 +154,18 @@ public class CalculateAdjustment extends Fragment {
             }
         });
 
-        this.readRaw1Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CalculateAdjustment.this.readRaw1();
-            }
-        });
-
-        this.readRaw2Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CalculateAdjustment.this.readRaw2();
-            }
-        });
-
-        this.readRaw3Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CalculateAdjustment.this.readRaw3();
-            }
-        });
-
         return view;
 
     }
 
 
     private void saveAdjustmentValues() {
-
-    }
-
-
-    private void readRaw1() {
-
-    }
-
-
-    private void readRaw2() {
-
-    }
-
-
-    private void readRaw3() {
-
+        if(m == 0.0 && b == 0.0)
+            return;
+        SharedPreferencesAccess sharedPreferencesAccess = new SharedPreferencesAccess(getContext());
+        sharedPreferencesAccess.SaveB(b);
+        sharedPreferencesAccess.SaveM(m);
+        Toast.makeText(getContext(), "Values saved!", Toast.LENGTH_LONG).show();
     }
 
 
@@ -265,7 +230,7 @@ public class CalculateAdjustment extends Fragment {
             return;
         }
 
-        LinearRegression linearRegression = new LinearRegression(phValues, rawValues);
+        LinearRegression linearRegression = new LinearRegression(rawValues, phValues);
 
         this.setM(linearRegression.GetM());
         this.setB(linearRegression.GetB());

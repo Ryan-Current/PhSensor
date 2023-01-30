@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -43,6 +44,9 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
     private TextView statusTextView, rawValueTextView, phTextView;
     private EditText adjustmentEditText;
 
+    private double m;
+    private double b;
+
     public static final int MESSAGE_STATE_CHANGED = 0;
     public static final int MESSAGE_READ = 1;
     public static final int MESSAGE_WRITE = 2;
@@ -75,6 +79,8 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
         this.RefreshButton = view.findViewById(R.id.refreshBluetoothButton);
         this.Function1Button = view.findViewById(R.id.function1Button);
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        loadMB();
 
         this.statusTextView = view.findViewById(R.id.statusTextView);
         this.rawValueTextView = view.findViewById(R.id.rawValueTextView);
@@ -167,15 +173,28 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
     }
 
 
-    private void bluetoothMessageReceived(String str)
-    {
+    private void bluetoothMessageReceived(String str) {
         Toast.makeText(getContext(), "Message: "+str, Toast.LENGTH_LONG).show();
         rawValueTextView.setText(str);
+        loadMB();
+        if(m == 0.0 && b == 0.0)
+            return;
+        try {
+            phTextView.setText("pH: " + (m * Double.parseDouble(str) + b));
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Unable to parse raw value: "+str, Toast.LENGTH_LONG).show();
+        }
     }
 
 
-    private void bluetoothDeviceStateChanged(int state)
-    {
+    private void loadMB() {
+        SharedPreferencesAccess sharedPreferencesAccess = new SharedPreferencesAccess(getContext());
+        this.m = sharedPreferencesAccess.LoadM();
+        this.b = sharedPreferencesAccess.LoadB();
+    }
+
+
+    private void bluetoothDeviceStateChanged(int state) {
         switch (state) {
             case BluetoothManager.STATE_DISCONNECTED:
                 Toast.makeText(getContext(), "Bluetooth device disconnected", Toast.LENGTH_LONG).show();
@@ -196,8 +215,7 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
     }
 
 
-    private void bluetoothMessageSent()
-    {
+    private void bluetoothMessageSent() {
         Toast.makeText(getContext(), "Reading pH", Toast.LENGTH_LONG).show();
     }
 
