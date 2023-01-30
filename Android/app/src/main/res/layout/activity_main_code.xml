@@ -55,7 +55,31 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/divisorEditText"
+        android:id="@+id/adjustmentEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        app:layout_constraintBottom_toTopOf="@+id/adjustmentBEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/mTextView" />
+
+    <TextView
+        android:id="@+id/mTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="m: "
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/adjustmentEditText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/adjustmentEditText" />
+
+    <EditText
+        android:id="@+id/adjustmentBEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -64,19 +88,19 @@
         app:layout_constraintBottom_toTopOf="@+id/phLabelTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textView3" />
+        app:layout_constraintStart_toEndOf="@+id/bTextView" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/bTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Divided by: "
+        android:text="b: "
         android:textColor="@color/black"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@+id/divisorEditText"
+        app:layout_constraintBottom_toBottomOf="@+id/adjustmentBEditText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/divisorEditText" />
+        app:layout_constraintTop_toTopOf="@+id/adjustmentBEditText" />
 
     <TextView
         android:id="@+id/rawValueTextView"
@@ -87,7 +111,7 @@
         android:text="Raw Value:"
         android:textColor="@color/black"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/divisorEditText"
+        app:layout_constraintBottom_toTopOf="@+id/adjustmentEditText"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView

@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import kotlin.jvm.internal.Intrinsics;
-
-import org.jetbrains.annotations.Nullable;
 
 public final class MainActivityCode extends Fragment implements IOnBluetoothDeviceClick {
     // elements on screen
@@ -43,8 +41,7 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
     private BluetoothManager bt;
 
     private TextView statusTextView, rawValueTextView, phTextView;
-    private EditText divisorEditText;
-
+    private EditText adjustmentEditText;
 
     public static final int MESSAGE_STATE_CHANGED = 0;
     public static final int MESSAGE_READ = 1;
@@ -82,7 +79,7 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
         this.statusTextView = view.findViewById(R.id.statusTextView);
         this.rawValueTextView = view.findViewById(R.id.rawValueTextView);
         this.phTextView = view.findViewById(R.id.phLabelTextView);
-        this.divisorEditText = view.findViewById(R.id.divisorEditText);
+        this.adjustmentEditText = view.findViewById(R.id.adjustmentEditText);
 
         RefreshButton.setOnClickListener((OnClickListener)(new OnClickListener() {
             public final void onClick(View it) {
@@ -92,7 +89,7 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
 
         Function1Button.setOnClickListener((OnClickListener)(new OnClickListener() {
             public final void onClick(View it) {
-                MainActivityCode.this.sendFunction1();
+                MainActivityCode.this.requestPH();
             }
         }));
 
@@ -206,9 +203,9 @@ public final class MainActivityCode extends Fragment implements IOnBluetoothDevi
 
 
     /**
-     * This is used to get the pH
+     * A number 1 must be sent to the arduino to let it know to return the raw ph data
      */
-    private void sendFunction1() {
+    private void requestPH() {
         if(isConnected)
             this.bt.sendMessage("1");
         else

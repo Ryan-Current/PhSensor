@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentList = new ArrayList<>();
         fragmentList.add(new MainActivityCode());
-        fragmentList.add(new MainActivityCode());
+        fragmentList.add(new CalculateAdjustment());
 
         viewPager = findViewById(R.id.MainViewPager);
         pagerAdapter = new PhPagerAdapter(getSupportFragmentManager(), fragmentList);
